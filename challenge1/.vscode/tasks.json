@@ -1,0 +1,89 @@
+{
+        // See https://go.microsoft.com/fwlink/?LinkId=733558
+        // for the documentation about the tasks.json format
+        "version": "2.0.0",
+        "tasks": [
+            // Build tasks
+            {
+                "label": "build",
+                "detail": "Build workspace (default)",
+                "type": "shell",
+                "command": "./build.sh",
+                "group": {
+                    "kind": "build",
+                    "isDefault": true
+                },
+                "problemMatcher": "$gcc"
+            },
+            {
+                "label": "debug",
+                "detail": "Build workspace (debug)",
+                "type": "shell",
+                "command": "./build.sh",
+                "options": {
+                    "env": {
+                        "BUILD_TYPE": "Debug"
+                    }
+                },
+                "group": "build",
+                "problemMatcher": "$gcc"
+            },
+            // Test tasks
+            {
+                "label": "test",
+                "detail": "Run all unit tests and show results.",
+                "type": "shell",
+                "command": "./test.sh",
+                "group": {
+                    "kind": "test",
+                    "isDefault": true
+                }
+            },
+            // Clean
+            {
+                "label": "clean",
+                "detail": "Run the clean target",
+                "type": "shell",
+                "command": "catkin clean",
+                "problemMatcher": "$gcc"
+            },
+            // Workspace editing tasks
+            {
+                "label": "import from workspace file",
+                "detail": "Use vcs to import modules specified by a workspace/rosinstall file.",
+                "type": "shell",
+                "command": "vcs import < src/ros.repos src",
+                "problemMatcher": []
+            },
+            {
+                "label": "update workspace file",
+                "detail": "Use vcs to update repositories in src to workspace file.",
+                "type": "shell",
+                "command": "vcs export src > src/ros.repos",
+                "problemMatcher": []
+            },
+            {
+                "label": "install dependencies",
+                "detail": "Install all dependencies specified in the workspaces package.xml files.",
+                "type": "shell",
+                "command": "sudo apt-get update && rosdep update && rosdep install --from-paths src --ignore-src -y",
+                "problemMatcher": []
+            },
+            {
+                "label": "setup",
+                "detail": "Set up the workspace",
+                "type": "shell",
+                "command": "./setup.sh",
+                "problemMatcher": []
+            }
+    
+        ],
+        "inputs": [
+            {
+              "id": "package",
+              "type": "promptString",
+              "description": "Package name"
+            }
+          ]
+    }
+    
