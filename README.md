@@ -21,9 +21,15 @@ Some testing code is present inside the main function in ```StewartIk.cpp```
 2. Axes: x pointing to the right, y pointing up, z pointing outwards
 3. The base plate and platform plate thickness offsets are ignored
 4. The platform is initialized in the home position
-5. There is a 60 degree offset between the platform and the base in the anti-clockwise direction
+5. There is a 60 degree rotation offset between the platform and the base in the anti-clockwise direction about the z-axis
 6. Number of degrees of freedom is fixed - 6
 7. All actuators have the exact same retracted and extended length
+
+<img src="diagram.png" width="400">
+
+- $\alpha_B$ is the anchor angle
+
+- $r_B$ is the radius
 
 ### Discussion
 I spent approximately 4.5 hrs on reading up on literature, solving the challenge and documenting my approach.
