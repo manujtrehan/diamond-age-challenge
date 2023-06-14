@@ -33,46 +33,17 @@ StewartIK::StewartIK(
                                 c1 + c2 + m_platformAngle,
                                 c1 + (-c2 - m_platformAngle);
 
-    // x, y, z coords of base anchor points
-    m_baseAnchorCoords.resize(NUM_JOINTS, 3);
-    m_baseAnchorCoords << cos(m_baseAnchorAngles(0)), sin(m_baseAnchorAngles(0)), 0,
-                            cos(m_baseAnchorAngles(1)), sin(m_baseAnchorAngles(1)), 0,
-                            cos(m_baseAnchorAngles(2)), sin(m_baseAnchorAngles(2)), 0,
-                            cos(m_baseAnchorAngles(3)), sin(m_baseAnchorAngles(3)), 0,
-                            cos(m_baseAnchorAngles(4)), sin(m_baseAnchorAngles(4)), 0,
-                            cos(m_baseAnchorAngles(5)), sin(m_baseAnchorAngles(5)), 0;
+    // set x, y, z coords of base anchor points
+    setAnchorCoords(m_baseAnchorCoords, m_baseAnchorAngles, m_baseRadius);
 
-    m_baseAnchorCoords *= m_baseRadius;
-    m_baseAnchorCoords.transposeInPlace(); // (6 x 3) -> (3 x 6)
-
-    // x, y, z coords of platform anchor points
-    m_platformAnchorCoords.resize(NUM_JOINTS, 3);
-    m_platformAnchorCoords << cos(m_platformAnchorAngles(0)), sin(m_platformAnchorAngles(0)), 0,
-                                cos(m_platformAnchorAngles(1)), sin(m_platformAnchorAngles(1)), 0,
-                                cos(m_platformAnchorAngles(2)), sin(m_platformAnchorAngles(2)), 0,
-                                cos(m_platformAnchorAngles(3)), sin(m_platformAnchorAngles(3)), 0,
-                                cos(m_platformAnchorAngles(4)), sin(m_platformAnchorAngles(4)), 0,
-                                cos(m_platformAnchorAngles(5)), sin(m_platformAnchorAngles(5)), 0;
-
-    m_platformAnchorCoords *= m_platformRadius;
-    m_platformAnchorCoords.transposeInPlace(); // (6 x 3) -> (3 x 6)
+    // set x, y, z coords of platform anchor points
+    setAnchorCoords(m_platformAnchorCoords, m_platformAnchorAngles, m_platformRadius);
 
     // init inverse kinematics
-    MatrixXf initLegVecs = (m_platformAnchorCoords - m_baseAnchorCoords).colwise() + m_basePlatformVec;
-    m_currLegLengths = initLegVecs.colwise().norm();
-
-    std::cout << m_currLegLengths << std::endl;
     updateLengthsIK(0, 0, 0, 0, 0, 0);
-    std::cout << "After:" << std::endl << m_currLegLengths << std::endl;
 
     // set the max valid leg length based on the extension
     setMinMaxLength(maxExtend);
-}
-
-void StewartIK::setMinMaxLength(float maxExtend)
-{
-    m_minLegLength = m_currLegLengths(0);
-    m_maxLegLength = m_minLegLength + maxExtend;
 }
 
 void StewartIK::updateLengthsIK(
@@ -83,8 +54,8 @@ void StewartIK::updateLengthsIK(
     float pitchAngle,
     float yawAngle)
 {
-    VectorXf trans(3);
-    trans << x, y, z;
+    VectorXf desiredTrans(3);
+    desiredTrans << x, y, z;
 
     AngleAxisf roll(rollAngle, Vector3f::UnitZ());
     AngleAxisf yaw(yawAngle, Vector3f::UnitY());
@@ -93,12 +64,37 @@ void StewartIK::updateLengthsIK(
 
     // l = T + H + R.P - B
     MatrixXf r_p_b = (quat.toRotationMatrix() * m_platformAnchorCoords) - m_baseAnchorCoords;
-    MatrixXf legVecs = r_p_b.colwise() + (trans + m_basePlatformVec);
+    MatrixXf legVecs = r_p_b.colwise() + (desiredTrans + m_basePlatformVec);
     m_currLegLengths = legVecs.colwise().norm();
+    // std::cout << "After:" << std::endl;
+    // std::cout << m_currLegLengths << std::endl;
 }
 
-    int main()
+void StewartIK::setAnchorCoords(
+    MatrixXf& anchorCoords,
+    VectorXf& anchorAngles,
+    float radius)
 {
-    StewartIK ik = StewartIK(0.5, 0.2, 0.11, 0.11, 0.2, 0.3);
+    anchorCoords.resize(NUM_JOINTS, 3);
+    anchorCoords << anchorAngles.array().cos(),
+                    anchorAngles.array().sin(),
+                    VectorXf::Zero(NUM_JOINTS);
+    anchorCoords *= radius;
+    anchorCoords.transposeInPlace(); // (6 x 3) -> (3 x 6)
+}
+
+void StewartIK::setMinMaxLength(float maxExtend)
+{
+    m_minLegLength = m_currLegLengths(0);
+    m_maxLegLength = m_minLegLength + maxExtend;
+}
+
+VectorXf StewartIK::getLengths() const { return m_currLegLengths; }
+
+int main()
+{
+    StewartIK ik = StewartIK(1, 1, 0.1309, 0.1309, 1, 0.5);
+    // ik.updateLengthsIK(0, 0, 0.2, 0, 0, 0);
+
     return 0;
 }

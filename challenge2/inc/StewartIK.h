@@ -73,8 +73,27 @@ public:
     /*
      * Set default actuator lengths
      * @brief Sets the minimum and maximum actuator lengths - joint limits
+     * @param maxExtend maximum extension of the actuators (m)
      */
     void setMinMaxLength(float maxExtend);
+
+    /*
+     * Set anchor coordinates
+     * @brief Calculates and sets the x, y, z coordinates for anchor points of the base/platform
+     * @param anchorCoords ref to the anchor coords variable that needs to be set (base or platform)
+     * @param anchorAngles ref to the respective anchor angles
+     * @param radius respective radius value (base or platform)
+     */
+    void setAnchorCoords(
+        MatrixXf& anchorCoords,
+        VectorXf& anchorAngles,
+        float radius);
+
+    /*
+     * Get actuator lengths
+     * @return returns the current actuator lengths
+     */
+    VectorXf getLengths() const;
 };
 
 #endif
