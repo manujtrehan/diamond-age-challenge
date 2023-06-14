@@ -67,8 +67,6 @@ void StewartIK::updateLengthsIK(
     MatrixXf legVecs = (quat.toRotationMatrix() * m_platformAnchorCoords) - m_baseAnchorCoords;
     legVecs = legVecs.colwise() + (desiredTrans + m_basePlatformVec);
     m_currLegLengths = legVecs.colwise().norm();
-    // std::cout << "Update:" << std::endl;
-    // std::cout << m_currLegLengths << std::endl;
 
     // check for invalid lengths (less than min, or greater than max)
     // skip the check on initialization - minLegLength initialized to -1
@@ -104,8 +102,17 @@ VectorXf StewartIK::getLengths() const { return m_currLegLengths; }
 
 int main()
 {
+    /*
+    * argument order
+    * (base radius, platform radius, base anchor / 2, platform anchor / 2, base-platform distance, max extension)
+    */
     StewartIK ik = StewartIK(1, 1, 0.1309, 0.1309, 1, 0.5);
-    ik.updateLengthsIK(0, 0, 0.2, 0, 0.1, 0);
+    std::cout << "Init lengths:" << std::endl;
+    std::cout << ik.getLengths() << std::endl;
+
+    ik.updateLengthsIK(0, 0, 0.2, 0, 0, 0.1);
+    std::cout << "Updated lengths:" << std::endl;
+    std::cout << ik.getLengths() << std::endl;
 
     return 0;
 }

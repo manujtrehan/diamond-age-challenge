@@ -1,6 +1,20 @@
 ## Challenge 2 - DiamondAge 3D
 
-***Author: Manuj Trehan***
+**Author: Manuj Trehan**
+
+### Dependencies
+- Eigen3
+
+```sudo apt install libeigen3-dev```
+
+### Compile and run
+- ```cd challenge2```
+- ```g++ -I inc -I /usr/include/eigen3 src/StewartIK.cpp -o StewartIK.out```
+
+- ```./StewartIK.out```
+  
+### Main
+Some testing code is present inside the main function in ```StewartIk.cpp```
 
 ### Assumptions
 1. The base and platform frame are aligned when the platform is at its home/retracted position (no relative rotation)
