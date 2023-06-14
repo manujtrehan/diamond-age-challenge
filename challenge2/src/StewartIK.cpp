@@ -6,7 +6,8 @@ StewartIK::StewartIK(
     float bA,
     float pA,
     float basePlatformDist,
-    float maxExtend) : m_baseRadius(bR), m_platformRadius(pR), m_baseAngle(bA), m_platformAngle(pA)
+    float maxExtend) : m_baseRadius(bR), m_platformRadius(pR), m_baseAngle(bA),
+                       m_platformAngle(pA), m_minLegLength(-1), m_maxLegLength(-1)
 {
     float c1 = EIGEN_PI / 3;
     float c2 = 2 * c1;
@@ -63,11 +64,21 @@ void StewartIK::updateLengthsIK(
     Quaternionf quat = roll * yaw * pitch;
 
     // l = T + H + R.P - B
-    MatrixXf r_p_b = (quat.toRotationMatrix() * m_platformAnchorCoords) - m_baseAnchorCoords;
-    MatrixXf legVecs = r_p_b.colwise() + (desiredTrans + m_basePlatformVec);
+    MatrixXf legVecs = (quat.toRotationMatrix() * m_platformAnchorCoords) - m_baseAnchorCoords;
+    legVecs = legVecs.colwise() + (desiredTrans + m_basePlatformVec);
     m_currLegLengths = legVecs.colwise().norm();
-    // std::cout << "After:" << std::endl;
+    // std::cout << "Update:" << std::endl;
     // std::cout << m_currLegLengths << std::endl;
+
+    // check for invalid lengths (less than min, or greater than max)
+    // skip the check on initialization - minLegLength initialized to -1
+    if(m_minLegLength > 0)
+    {
+        bool b1 = (m_currLegLengths.array() < m_minLegLength).any();
+        bool b2 = (m_currLegLengths.array() > m_maxLegLength).any();
+        if(b1 or b2)
+            throw std::invalid_argument("Invalid input pose!");
+    }
 }
 
 void StewartIK::setAnchorCoords(
@@ -94,7 +105,7 @@ VectorXf StewartIK::getLengths() const { return m_currLegLengths; }
 int main()
 {
     StewartIK ik = StewartIK(1, 1, 0.1309, 0.1309, 1, 0.5);
-    // ik.updateLengthsIK(0, 0, 0.2, 0, 0, 0);
+    ik.updateLengthsIK(0, 0, 0.2, 0, 0.1, 0);
 
     return 0;
 }

@@ -2,6 +2,7 @@
 #define _StewartIK_
 
 #include <iostream>
+#include <stdexcept>
 #include <Eigen/Dense>
 
 #define NUM_JOINTS 6
