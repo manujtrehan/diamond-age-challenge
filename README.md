@@ -21,7 +21,7 @@ Some testing code is present inside the main function in ```StewartIk.cpp```
 2. Axes: x pointing to the right, y pointing up, z pointing outwards
 3. The base plate and platform plate thickness offsets are ignored
 4. The platform is initialized in the home position
-5. There is a 60$^\circ$ offset between the platform and the base in the anti-clockwise direction
+5. There is a 60 degree offset between the platform and the base in the anti-clockwise direction
 6. Number of degrees of freedom is fixed - 6
 7. All actuators have the exact same retracted and extended length
 
@@ -32,7 +32,7 @@ I created a ```StewartIK``` class for the inverse kinematics solver. It requires
 
 **Difficulties with Forward Kinematics**
 
-A Stewart platform is a parallel mechanism - it contians closed chain linkages, unlike a serial manipulator which is an open chain. Forward kinematics for closed chain linkages is complex because there are additional constraints that need to be satisfied, e.g. loop-closure constraints. Usually, multiple solutions exist for a single set of actuator lengths. For a 6-DoF platform, we need to map 6 leg lengths to a pose vector and a rotation matrix. This means a total of 12 equations and 12 unknowns (including the special orthogonal group constraints on the rotation matrix).
+A Stewart platform is a parallel mechanism - it contians closed chain linkages, unlike a serial manipulator which is an open chain. Forward kinematics of open chains has closed-form solutions. Forward kinematics of closed chain linkages is complex because there are additional constraints that need to be satisfied, e.g. loop-closure constraints. Usually, multiple solutions exist for a single set of actuator lengths. For a 6-DoF platform, we need to map 6 leg lengths to a pose vector and a rotation matrix. This means a total of 12 equations and 12 unknowns (including the special orthogonal group constraints on the rotation matrix).
 
 To overcome these challenges, I would use a numerical / iterative solver for the forward kinematics. One approach could be - utilizing the analytical inverse kinematics equation. Differentiating it to obtain an equation containing the leg velocities, and the inverse kinematics jacobian. This jacobian related the leg velocities to the twist of the platform. To calculate this Jacobian, a static force analysis can be performed. This will give us the inverse of the required Jacobian, which can then be utilized to perform forward kinematics. In an iterative approach, an initial estimate of the solution can be calculated and then iteratively improved upon, until convergence. A useful approach is using the previously known position of the platform as the initial guess for the iterative procedure, since it has high chances of converging to the correct solution. Checks can be done to discard invalid solutions as well.
 
