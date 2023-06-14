@@ -1,24 +1,19 @@
-# Diamond Age Robotics Technical Assessment
+## Challenge 2 - DiamondAge 3D
 
-## Motivation
+**Author: Manuj Trehan**
 
-The goal of this technical assessment is provide an opportunity for you to showcase the talents that make you uniquely qualified to contribute to the robotics efforts at Diamond Age.
+### Assumptions
+1. The base and platform frame are aligned when the platform is at its home/retracted position (no relative rotation)
+2. Axes: x pointing to the right, y pointing up, z pointing outwards
+3. The base plate and platform plate thickness offsets are ignored
+4. The platform is initialized in the home position
+5. N_DOF is fixed - 6
+6. All actuators have the same retracted and extended length
 
-The challenges are intentionally open-ended without a correct solution as this is part of the start-up experience. The approach and execution is more important than then correct answer. 
+### Discussion
+I spent approximately 4.5 hrs on reading up on literature, solving the challenge and documenting my approach.
 
-Please feel free to ask clarifying questions and manipulate the challenge in any way that you believe will showcase your skills while still achieving the goal.
+I created a ```StewartIK``` class for the inverse kinematics solver. It requires and stores the default system parameters, like the plate radius, anchor angles and actuator limits. It has methods for initialization, solving IK for a given 6-DoF pose, and getting the current actuator lengths, apart from some other helper functions.
 
-## Instructions
-
-Please select and complete one of the challenges that you believe best showcases your abilities. Each challenge is designed to be completed in less than 4 hours.
-
-### Challenge Summary
-
-#### Challenge 1 - MoveIt / ROS
-#### Challenge 2 - Kinematics
-
-## Submission
-
-Please track all work in a github repo and share the repository with sam@diamondage3d.com when complete
-
-###
+### Challenges
+It was a little difficult to thoroughly test my algorithm to see if it was giving the correct ouputs. One way to check would by through a simulation, but that was out of scope of this challenge.
